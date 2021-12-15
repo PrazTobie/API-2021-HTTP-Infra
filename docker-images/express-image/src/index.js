@@ -6,4 +6,4 @@ app.get("/", (req, res) => {
     res.json({ random: Math.random() });
 });
 
-app.listen(80);
+app.listen(3000);
