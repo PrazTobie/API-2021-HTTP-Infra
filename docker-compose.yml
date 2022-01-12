@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  reverse-proxy:
+    build: ./docker-images/apache-reverse-proxy
+    container_name: api-reverse-proxy
+    image: api/reverse-proxy
+    ports:
+      - "8080:80"
+  web:
+    build: ./docker-images/apache-php-image
+    container_name: api-php-server
+    image: api/php-server
+  api: 
+    build: ./docker-images/express-image
+    container_name: api-express-server
+    image: api/express-server
