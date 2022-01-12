@@ -100,17 +100,17 @@ Dans le dossier `docker-images/apache-reverse-proxy` se trouvent le `Dockerfile`
 Actuellement, les éléments à copier sont les fichiers `000-default.conf`, la configuration par défaut vide, et `001-reverse-proxy.conf`, notre configuration de proxy inversé. Le fichier `001-reverse-proxy.conf` marche sur le principe suivant:
 
 ```xml
-<!-- Définit un hôte virtuel sur le port 80 -->
+<!-- Défini un hôte virtuel sur le port 80 -->
 <VirtualHost *:80>
 
-    <!-- Définit le nom du serveur sur lequel le reverse proxy va agir -->
+    <!-- Défini le nom du serveur sur lequel le reverse proxy va agir -->
     ServerName demo.api.ch
 
-    <!-- Définit l'URL à rediriger ainsi que le serveur qui va la recevoir -->
+    <!-- Défini l'URL à rediriger ainsi que le serveur qui va la recevoir -->
     ProxyPass "/api/random" "http://172.17.0.3:3000/"
     ProxyPassReverse "/api/random" "http://172.17.0.3:3000/"
 
-    <!-- Définit l'URL à rediriger ainsi que le serveur qui va la recevoir -->
+    <!-- Défini l'URL à rediriger ainsi que le serveur qui va la recevoir -->
     ProxyPass "/" "http://172.17.0.2:80/"
     ProxyPassReverse "/" "http://172.17.0.2:80/"
 
@@ -124,3 +124,24 @@ Pour construire l'image docker, il faut simplement se déplacer dans le dossier 
 ```Dockerfile
 docker build -t api/apache_rp
 ```
+
+### Création d'un container
+
+Il faut d'abord lancer les containers des serveurs statiques et dynamiques, pas besoin de remapper les ports car ils n'ont pas besoin d'être exposés sur la machine elle-même:
+
+```Dockerfile
+docker run api/apache_php
+docker run api/express_node
+```
+
+Pour construire un container et remapper le port 80 sur le port 80 de la machine à partir de l'image précédamment créée il faut lancer la commande suivante:
+
+```Dockerfile
+docker run -p 3000:3000 api/apache_rp
+```
+
+**Notes importantes:**
+
+* Comme la configuration est statique, il faut s'assurer que les adresses ip définies dans le fichier `001-reverse-proxy.conf` correspondent à celles attribuées aux containers des serveurs précédement créés.
+
+* Il faut éditer le fichier des hôtes de votre machine pour lier l'adresse `172.0.0.1` au nom de serveur défini dans de fichier `001-reverse-proxy.conf` soit `demo.api.ch`.
