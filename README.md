@@ -5,6 +5,7 @@
 3. [Partie 3: Proxy inversé avec apache (configuration statique)](#partie-3-proxy-inversé-avec-apache-configuration-statique)
 4. [Partie 4: requêtes AJAX avec JQuery](#partie-4-requêtes-ajax-avec-jquery)
 5. [Partie 5: Proxy inversé avec configuration dynamique](#partie-5-proxy-inversé-avec-configuration-dynamique)
+6. [Parties additionnelles](#parties-additionnelles)
 
 ## Partie 1: Serveur HTTP statique avec `apache httpd`
 
