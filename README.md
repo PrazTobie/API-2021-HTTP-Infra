@@ -3,6 +3,7 @@
 1. [Partie 1: Serveur HTTP statique avec `apache httpd`](#partie-1-serveur-http-statique-avec-apache-httpd)
 2. [Partie 2: Serveur HTTP dynamique avec `express.js`](#partie-2-serveur-http-dynamique-avec-expressjs)
 3. [Partie 3: Proxy inversé avec apache (configuration statique)](#partie-3-proxy-inversé-avec-apache-configuration-statique)
+4. [Partie 4: requêtes AJAX avec JQuery](#partie-4-requêtes-ajax-avec-jquery)
 
 ## Partie 1: Serveur HTTP statique avec `apache httpd`
 
@@ -20,7 +21,7 @@ La seule différence notable avec le webcast est que notre image embarque une ve
 
 Pour construire l'image docker, il faut simplement se déplacer dans le dossier `docker-images/apache-php-image` et lancer la commande suivante:
 
-```Dockerfile
+```sh
 docker build -t api/apache_php
 ```
 
@@ -28,7 +29,7 @@ docker build -t api/apache_php
 
 Pour construire un container et remapper le port 80 sur le port 8080 de la machine à partir de l'image précédamment créée il faut lancer la commande suivante:
 
-```Dockerfile
+```sh
 docker run -p 8080:80 api/apache_php
 ```
 
@@ -69,7 +70,7 @@ app.listen(3000);
 
 Pour construire l'image docker, il faut simplement se déplacer dans le dossier `docker-images/express-image` et lancer la commande suivante:
 
-```Dockerfile
+```sh
 docker build -t api/express_node
 ```
 
@@ -77,7 +78,7 @@ docker build -t api/express_node
 
 Pour construire un container et remapper le port 3000 sur le port 3000 de la machine à partir de l'image précédamment créée il faut lancer la commande suivante:
 
-```Dockerfile
+```sh
 docker run -p 3000:3000 api/express_node
 ```
 
@@ -121,7 +122,7 @@ Actuellement, les éléments à copier sont les fichiers `000-default.conf`, la 
 
 Pour construire l'image docker, il faut simplement se déplacer dans le dossier `docker-images/apache-reverse-proxy` et lancer la commande suivante:
 
-```Dockerfile
+```sh
 docker build -t api/apache_rp
 ```
 
@@ -129,14 +130,14 @@ docker build -t api/apache_rp
 
 Il faut d'abord lancer les containers des serveurs statiques et dynamiques, pas besoin de remapper les ports car ils n'ont pas besoin d'être exposés sur la machine elle-même:
 
-```Dockerfile
+```sh
 docker run api/apache_php
 docker run api/express_node
 ```
 
 Pour construire un container et remapper le port 80 sur le port 80 de la machine à partir de l'image précédamment créée il faut lancer la commande suivante:
 
-```Dockerfile
+```sh
 docker run -p 3000:3000 api/apache_rp
 ```
 
@@ -145,3 +146,38 @@ docker run -p 3000:3000 api/apache_rp
 * Comme la configuration est statique, il faut s'assurer que les adresses ip définies dans le fichier `001-reverse-proxy.conf` correspondent à celles attribuées aux containers des serveurs précédement créés.
 
 * Il faut éditer le fichier des hôtes de votre machine pour lier l'adresse `172.0.0.1` au nom de serveur défini dans de fichier `001-reverse-proxy.conf` soit `demo.api.ch`.
+
+## Partie 4: requêtes AJAX avec JQuery
+
+Cette partie du labo se trouve sur la branche suivante: [fb-ajax](https://github.com/PrazTobie/API-2021-HTTP-Infra/tree/fb-ajax)
+
+Le but de cette partie est de créer un script JS permettant de faire une requête HTTP sur le serveur web `express` depuis le serveur web `apache` et d'afficher le résultat dans une div. Contrairement à la donnée demandant d'utilisier JQuery pour faire une requête AJAX, nous avons choisi d'utiliser les API webs standards (en l'occurence fetch).
+
+### Création du Dockerfile
+
+Le dockerfile est le même que celui utilisé pour le serveur `apache`. La modification réside dans les fichiers à copier qui embarque maintenant le script `index.js`. Ce script marche sur le principe suivant:
+
+```js
+// Attendre que le DOM soit chargé
+window.addEventListener('DOMContentLoaded', () => {
+    // Récupérer la div qui contiendra le résultat
+    const random = document.getElementById("random");
+    // Fonction anonyme et asynchrone pour faire 
+    // une requête HTTP se exécutée toutes les 3 secondes
+    setInterval(async () => {
+        // Faire une requête HTTP sur le serveur express
+        // et récupérer le résultat en format JSON
+        const res = await fetch("/api/random").then(res => res.json());
+        // Remplacer le contenu de la div par le résultat de la requête
+        random.innerText = res.random;
+    }, 3000);
+});
+```
+
+### Construction de l'image
+
+L'image se construit de la même manière que pour le serveur `apache`.
+
+### Création d'un container
+
+La création du container se fait de la même manière que pour le serveur `apache`.
