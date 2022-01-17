@@ -65,6 +65,7 @@ services:
     container_name: portainer
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Accès au socket docker de la machine hôte
+      - ../portainer-data:/data # Données persistantes de Portainer stockées sur machine hôte
     ports:
       - 9000:9000 # UI Portainer
 ```
