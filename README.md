@@ -1,5 +1,7 @@
 ## Parties additionnelles
 
+Cette partie du labo se trouve sur la branche suivante: [additional-steps](https://github.com/PrazTobie/API-2021-HTTP-Infra/tree/additional-steps)
+
 Les parties suivante ont été implémentées grâce à [traefik](https://doc.traefik.io/traefik/):
 * Load balancing: multiple server nodes
 * Load balancing: round-robin vs sticky sessions
